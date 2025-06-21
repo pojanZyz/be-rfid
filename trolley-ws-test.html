@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Trolley Test</title>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+  <h2>WebSocket Trolley Real-time Test</h2>
+  <pre id="log"></pre>
+  <script>
+    const log = (msg) => {
+      document.getElementById('log').textContent += msg + '\n';
+    };
+    const socket = io('http://localhost:4000');
+    socket.on('connect', () => log('Connected to WebSocket!'));
+    socket.on('trolley:position:create', data => log('CREATE: ' + JSON.stringify(data)));
+    socket.on('trolley:position:update', data => log('UPDATE: ' + JSON.stringify(data)));
+    socket.on('trolley:position:delete', data => log('DELETE: ' + JSON.stringify(data)));
+  </script>
+</body>
+</html>

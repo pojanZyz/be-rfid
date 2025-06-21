@@ -25,16 +25,23 @@ export const createTrolley = async (req, res) => {
       status_id: status.id,
       created_at: new Date()
     });
+    // Redis cache posisi troli
+    const redis = req.app.get('redis');
+    const trolleyPosition = {
+      id: trolley.id,
+      rfid_code: trolley.rfid_code,
+      trolley_code: trolley.trolley_code,
+      status_id: trolley.status_id,
+      created_at: trolley.created_at
+    };
+    await redis.set(`trolley:pos:${trolley.id}`, JSON.stringify(trolleyPosition));
+    // Push ke frontend via WebSocket
+    const io = req.app.get('io');
+    io.emit('trolley:position:create', trolleyPosition);
     return res.status(201).json({
       status: true,
       message: 'Troli berhasil ditambahkan',
-      data: {
-        id: trolley.id,
-        rfid_code: trolley.rfid_code,
-        trolley_code: trolley.trolley_code,
-        status_id: trolley.status_id,
-        created_at: trolley.created_at
-      }
+      data: trolleyPosition
     });
   } catch (err) {
     return res.status(500).json({ status: false, message: 'Internal server error' });
@@ -198,16 +205,23 @@ export const updateTrolley = async (req, res) => {
       status_id: status.id,
       updated_at: new Date()
     });
+    // Redis cache posisi troli
+    const redis = req.app.get('redis');
+    const trolleyPosition = {
+      id: trolley.id,
+      rfid_code: trolley.rfid_code,
+      trolley_code: trolley.trolley_code,
+      status_id: trolley.status_id,
+      updated_at: trolley.updated_at
+    };
+    await redis.set(`trolley:pos:${trolley.id}`, JSON.stringify(trolleyPosition));
+    // Push ke frontend via WebSocket
+    const io = req.app.get('io');
+    io.emit('trolley:position:update', trolleyPosition);
     return res.json({
       status: true,
       message: 'Troli berhasil diperbarui',
-      data: {
-        id: trolley.id,
-        rfid_code: trolley.rfid_code,
-        trolley_code: trolley.trolley_code,
-        status_id: trolley.status_id,
-        updated_at: trolley.updated_at
-      }
+      data: trolleyPosition
     });
   } catch (err) {
     return res.status(500).json({ status: false, message: 'Internal server error' });
@@ -222,6 +236,12 @@ export const deleteTrolley = async (req, res) => {
       return res.status(404).json({ status: false, message: 'Troli tidak ditemukan' });
     }
     await trolley.update({ deleted_at: new Date() });
+    // Hapus posisi dari Redis
+    const redis = req.app.get('redis');
+    await redis.del(`trolley:pos:${trolley.id}`);
+    // Push ke frontend via WebSocket
+    const io = req.app.get('io');
+    io.emit('trolley:position:delete', { id: trolley.id, deleted_at: trolley.deleted_at });
     return res.json({
       status: true,
       message: 'Troli berhasil dihapus',
