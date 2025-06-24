@@ -8,6 +8,8 @@ import trolleyRoutes from './src/routes/trolleys.js';
 import trolleyStatusRoutes from './src/routes/trolley-statuses.js';
 import locationRoutes from './src/routes/locations.js';
 import trolleyLocationLogRoutes from './src/routes/trolley-location-log.js';
+import userMonitoringRoutes from './src/routes/user-monitoring.js';
+import userRoleRoutes from './src/routes/user-role.js';
 import { startTrolleyLocationConsumer } from './src/queue/trolleyLocationConsumer.js';
 
 const app = express();
@@ -18,6 +20,8 @@ app.use('/trolleys', trolleyRoutes);
 app.use('/trolley-statuses', trolleyStatusRoutes);
 app.use('/locations', locationRoutes);
 app.use('/', trolleyLocationLogRoutes);
+app.use(userMonitoringRoutes);
+app.use(userRoleRoutes);
 
 app.set('redis', redis);
 
@@ -27,10 +31,10 @@ app.set('io', io);
 
 const initializeDatabase = async () =>{
     try{
-        console.log('Migrating database tables (sync with alter)...');
-        await db.sync({ force: false, alter: true });
+        // console.log('Migrating database tables (sync with alter)...');
+        // await db.sync({ force: false, alter: true });
         await db.authenticate();
-        console.log('Database migration & connection established successfully.');
+        // console.log('Database migration & connection established successfully.');
     } catch (error){
         console.error('unable to connnect to database: ', error);
     }
