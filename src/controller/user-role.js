@@ -51,7 +51,17 @@ export const updateUserRole = async (req, res) => {
         }
         // Update role
         await user.update({ role_id });
-        // (Opsional) Catat log perubahan role ke DB/Redis
+        // Catat log perubahan role ke Redis
+        const auditLog = {
+            user_id: user.id,
+            username: user.username,
+            changed_by: requester.username,
+            old_role_id: user.role_id,
+            new_role_id: role_id,
+            new_role: role.name,
+            changed_at: new Date().toISOString()
+        };
+        await req.app.get('redis').lpush('user_role_audit', JSON.stringify(auditLog));
         // Emit ke WebSocket jika perlu
         req.app.get('io').emit('user_role_update', {
             id: user.id,

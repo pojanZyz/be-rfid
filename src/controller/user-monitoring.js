@@ -36,6 +36,8 @@ export const getUserMonitoring = async (req, res) => {
     try {
         // Pastikan user admin (role dicek di middleware)
         const data = await getMonitoringData();
+        // Emit ke WebSocket (broadcast ke semua client)
+        req.app.get('io').emit('user_monitoring_update', data);
         return res.status(200).json({
             status: true,
             message: 'Success',
