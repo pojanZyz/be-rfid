@@ -11,8 +11,10 @@ import trolleyLocationLogRoutes from './src/routes/trolley-location-log.js';
 import userMonitoringRoutes from './src/routes/user-monitoring.js';
 import userRoleRoutes from './src/routes/user-role.js';
 import { startTrolleyLocationConsumer } from './src/queue/trolleyLocationConsumer.js';
+import cors from 'cors';
 
 const app = express();
+app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 
 app.use('/auth', authRoutes);
