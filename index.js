@@ -6,6 +6,9 @@ import { db } from './src/config/database.js';
 import authRoutes from './src/routes/auth.js';
 import trolleyRoutes from './src/routes/trolleys.js';
 import trolleyStatusRoutes from './src/routes/trolley-statuses.js';
+import locationRoutes from './src/routes/locations.js';
+import trolleyLocationLogRoutes from './src/routes/trolley-location-log.js';
+import { startTrolleyLocationConsumer } from './src/queue/trolleyLocationConsumer.js';
 
 const app = express();
 app.use(express.json());
@@ -13,6 +16,8 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/trolleys', trolleyRoutes);
 app.use('/trolley-statuses', trolleyStatusRoutes);
+app.use('/locations', locationRoutes);
+app.use('/', trolleyLocationLogRoutes);
 
 app.set('redis', redis);
 
@@ -22,14 +27,17 @@ app.set('io', io);
 
 const initializeDatabase = async () =>{
     try{
-        db.sync({ force: false, alter: true });
-        db.authenticate();
-        console.log('Database connection has been established successfully.');
+        console.log('Migrating database tables (sync with alter)...');
+        await db.sync({ force: false, alter: true });
+        await db.authenticate();
+        console.log('Database migration & connection established successfully.');
     } catch (error){
         console.error('unable to connnect to database: ', error);
     }
 }
 initializeDatabase();
+
+startTrolleyLocationConsumer(io); // Mulai consumer RabbitMQ
 
 server.listen(4000, () => {
     console.log('Server is running on port 4000');

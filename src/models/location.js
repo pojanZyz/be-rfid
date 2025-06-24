@@ -20,6 +20,8 @@ export default (sequelize) => {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
     },
+    updated_at: DataTypes.DATE,
+    deleted_at: DataTypes.DATE,
     x_coordinate: DataTypes.DECIMAL,
     y_coordinate: DataTypes.DECIMAL,
     z_coordinate: DataTypes.DECIMAL
