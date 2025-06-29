@@ -2,7 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 export default (sequelize) => {
   class RFIDReader extends Model {
     static associate(models) {
-      // RFIDReader.belongsTo(models.Location, { foreignKey: 'location_id' });
+      RFIDReader.belongsTo(models.Location, { foreignKey: 'location_id', as: 'location' });
     }
   }
   RFIDReader.init({

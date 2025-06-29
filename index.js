@@ -10,6 +10,7 @@ import locationRoutes from './src/routes/locations.js';
 import trolleyLocationLogRoutes from './src/routes/trolley-location-log.js';
 import userMonitoringRoutes from './src/routes/user-monitoring.js';
 import userRoleRoutes from './src/routes/user-role.js';
+import readersRoutes from './src/routes/readers.js';
 import { startTrolleyLocationConsumer } from './src/queue/trolleyLocationConsumer.js';
 import cors from 'cors';
 
@@ -24,6 +25,7 @@ app.use('/locations', locationRoutes);
 app.use('/', trolleyLocationLogRoutes);
 app.use(userMonitoringRoutes);
 app.use(userRoleRoutes);
+app.use('/readers', readersRoutes);
 
 app.set('redis', redis);
 
